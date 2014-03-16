@@ -1680,8 +1680,49 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
             break;
         }
         case TARGET_ALL_ENEMY_IN_AREA:
-            FillAreaTargets(targetUnitMap, radius, PUSH_DEST_CENTER, SPELL_TARGETS_AOE_DAMAGE);
+        {
+            if (m_spellInfo->SpellIconID == 148 && m_spellInfo->SpellFamilyName == SPELLFAMILY_WARRIOR)
+            {
+                Unit* pUnitTarget = m_targets.getUnitTarget();
+                WorldObject* originalCaster = GetAffectiveCasterObject();
+                if (!pUnitTarget || !originalCaster)
+                    break;
+
+                UnitList tempTargetUnitMap;
+                {
+                    MaNGOS::AnyAoEVisibleTargetUnitInObjectRangeCheck u_check(pUnitTarget, originalCaster, radius);
+                    MaNGOS::UnitListSearcher<MaNGOS::AnyAoEVisibleTargetUnitInObjectRangeCheck> searcher(tempTargetUnitMap, u_check);
+                    Cell::VisitAllObjects(m_caster, searcher, radius);
+                }
+
+                if (tempTargetUnitMap.empty())
+                    break;
+
+                tempTargetUnitMap.sort(TargetDistanceOrderNear(m_caster));
+                uint32 t = unMaxTargets;
+                UnitList::iterator itr = tempTargetUnitMap.begin();
+
+                while (t && itr != tempTargetUnitMap.end())
+                {
+                    Unit* target = *itr;
+                    if (!target->IsWithinLOSInMap(originalCaster) || target == pUnitTarget)
+                    {
+                        ++itr;
+                        continue;
+                    }
+
+                    targetUnitMap.push_back(target);
+                    tempTargetUnitMap.erase(itr);
+                    tempTargetUnitMap.sort(TargetDistanceOrderNear(m_caster));
+                    itr = tempTargetUnitMap.begin();
+
+                    --t;
+                }
+            }
+            else
+                FillAreaTargets(targetUnitMap, radius, PUSH_DEST_CENTER, SPELL_TARGETS_AOE_DAMAGE);
             break;
+        }
         case TARGET_AREAEFFECT_INSTANT:
         {
             SpellTargets targetB = SPELL_TARGETS_AOE_DAMAGE;
