@@ -1,6 +1,12 @@
+<<<<<<< HEAD:contrib/extractor/VC120_AD.sln
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ad", "VC120_ad.vcxproj", "{D7552D4F-408F-4F8E-859B-366659150CF4}"
+=======
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ad", "VC90_ad.vcproj", "{D7552D4F-408F-4F8E-859B-366659150CF4}"
+>>>>>>> 227404d1fd0a6c3ab826bb83450f59f176cc0352:contrib/extractor/VC90_AD.sln
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
